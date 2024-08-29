@@ -4,7 +4,7 @@ Biofilm Growth Simulation in Streams
 
 Overview:
     
-    This project simulates biofilm growth in streams using OpenFOAM, a high-fidelity Computational Fluid Dynamics (CFD) software. The study focuses on investigating the impact of various nutrient concentrations and flow rates on biofilm development under different environmental conditions. The results aim to provide insights into biofilm dynamics and help improve water quality management strategies.
+This project simulates biofilm growth in streams using OpenFOAM, a high-fidelity Computational Fluid Dynamics (CFD) software. The study focuses on investigating the impact of various nutrient concentrations and flow rates on biofilm development under different environmental conditions. The results aim to provide insights into biofilm dynamics and help improve water quality management strategies.
 
 Project Structure:
 
