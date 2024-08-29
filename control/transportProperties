@@ -1,0 +1,59 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      transportProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+transportModel  Newtonian;
+nu								[0 2 -1 0 0 0 0] 	1.04E-6;
+
+//// Turning CT scalar field into porosity and then permeability via Kozeny Carman style relationship
+poreScale	1;	//0 = continuum mode, 1=pore scale mode with attachment/precipitation on solid surface
+CTupper			CTupper    		[0 -1 0 0 0 0 0] 	255;
+CTlower			CTlower     	[0 -1 0 0 0 0 0] 	0;
+epsUpper		epsUpper 		[0 0 0 0 0 0 0] 	1;
+epsLower    	epsLower 		[0 0 0 0 0 0 0] 	1E-6;
+epsCrit			epsCrit			[0 0 0 0 0 0 0]		0.2;
+K0				K0     			[0 -2 0 0 0 0 0] 	1E9;
+Kn				Kn				[0 0 0 0 0 0 0]		3;
+
+
+//// Injection fluid properties
+D_bacteria		D_bacteria  	[0 2 -1 0 0 0 0] 	(1.00E-9 0 0 0 1.00E-9 0 0 0 1.00E-9); //effective diffusion coefficient for tracer (Chrysikopolous & Katzourakis, 2015)
+D_PO4			D_PO4	  		[0 2 -1 0 0 0 0] 	(1.00E-9 0 0 0 1.00E-9 0 0 0 1.00E-9);
+D_COD			D_COD  			[0 2 -1 0 0 0 0] 	(1.00E-9 0 0 0 1.00E-9 0 0 0 1.00E-9);
+D_NO3			D_NO3  			[0 2 -1 0 0 0 0] 	(1.00E-9 0 0 0 1.00E-9 0 0 0 1.00E-9);
+qhat_COD		qhat_COD  		[0 0 -1 0 0 0 0] 	0.0075;
+YCOD		    YCOD  			[0 0 0 0 0 0 0] 	0.42;
+YPO4		    YPO4  			[0 0 0 0 0 0 0] 	12.22;
+YNO3		    YNO3  			[0 0 0 0 0 0 0] 	1.873;
+
+zAttach         zAttach     	[0 0 -1 0 0 0 0]	1E-3; //bacterial attachment rate (velocity dependent)
+zStrain         zStrain     	[0 0 -1 0 0 0 0]	5E-4; //bacterial straining rate (independent of velocity)
+zAttachUpperThreshold	zAttachUpperThreshold	[0 1 -1 0 0 0 0] 6.63E-4;// 39.79cm/hr (van Paassen - scale up of biogrout)//bacterial attachment velocity limit, Uint
+zAttachLowerThreshold	zAttachLowerThreshold	[0 1 -1 0 0 0 0] 0;//bacterial attachment velocity limit, Uint
+solidThreshold	solidThreshold	[0 0 0 0 0 0 0] 	0.1; //porosity threshold below which a cell is considered a solid surface
+attachSeedThreshold	attachSeedThreshold	[0 0 0 0 0 0 0] 	0.99; //threshold above which a cell is considered attachable, based on CT field
+zDecay          zDecay      	[0 0 -1 0 0 0 0] 	0; //attached bacterial decay, 1.1574e-4 equals 100% decay in 24 hrs
+zEncapsulationConst zEncapsulationConst [1 -3 0 0 0 0 0] 12; //constant relating zBacteria reduction to mass of CaCO3
+
+
+KNO3			KNO3			[1 -3 0 0 0 0 0]		5E-4; // 0.5 mg/L -> 5E-4 kg/m3
+KPO4			KPO4			[1 -3 0 0 0 0 0]		5E-4;
+KCOD			KCOD			[1 -3 0 0 0 0 0]		0.02;
+
+rhozBacteria  	rhozBacteria    [1 -3 0 0 0 0 0] 0.01;//30;	
+
+
+// ************************************************************************* //
