@@ -1,0 +1,264 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1812                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Which of the steps to run
+castellatedMesh true;
+snap            true;
+addLayers       false; // Disable addLayers step
+
+// Geometry. Definition of all surfaces. All surfaces are of class
+// searchableSurface.
+// Surfaces are used
+// - to specify refinement for any mesh cell intersecting it
+// - to specify refinement for any mesh cell inside/outside/near
+// - to 'snap' the mesh boundary to the surface
+geometry
+{
+    rock.stl
+    {
+        type triSurfaceMesh;
+        name rock;
+    }
+    
+    slope.stl
+    {
+        type triSurfaceMesh;
+        name slope;
+    }    
+
+    wall1
+    {
+        type searchablePlane;
+        planeType pointAndNormal;
+        pointAndNormalDict
+        {
+            point   (0 0 0.5);
+            normal  (0 0 1);
+        }
+    }
+    side1
+    {
+        type searchablePlane;
+        planeType pointAndNormal;
+        pointAndNormalDict
+        {
+            point   (0 0 0);
+            normal  (0 1 0);
+        }
+    }
+    side2
+    {
+        type searchablePlane;
+        planeType pointAndNormal;
+        pointAndNormalDict
+        {
+            point   (0 0.02 0);
+            normal  (0 1 0);
+        }
+    }
+    inlet
+    {
+        type searchablePlane;
+        planeType pointAndNormal;
+        pointAndNormalDict
+        {
+            point   (0 0 0);
+            normal  (1 0 0);
+        }
+    }
+    outlet
+    {
+        type searchablePlate;
+        origin (1.8 0 0.46);
+        span (0 0.02 0.04);
+    }
+
+    wall2
+    {
+        type searchablePlate;
+        origin (1.8 0 0);
+        span (0 0.02 0.46);
+    }
+}
+
+// Settings for the castellatedMesh generation.
+castellatedMeshControls
+{
+    // Refinement parameters
+    // ~~~~~~~~~~~~~~~~~~~~~
+    maxLocalCells 100000;
+    maxGlobalCells 2000000;
+    minRefinementCells 5;
+    maxLoadUnbalance 0.10;
+    nCellsBetweenLevels 3;
+
+    // Explicit feature edge refinement
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    features
+    (
+        // Example: Uncomment and set the file and level for feature edges
+        {
+           file "slope.eMesh";
+           level 3;
+         }
+        {
+           file "rock.eMesh";
+           level 3;
+         }
+   );
+//
+    // Surface based refinement
+    // ~~~~~~~~~~~~~~~~~~~~~~~~
+    refinementSurfaces
+    {
+        slope
+        {
+            level (3 3);
+        }
+        rock
+        {
+            level (3 3);
+        }
+        inlet
+        {
+            level (1 1);    
+        }
+        wall1
+        {
+            level (1 1);
+        }
+        outlet
+        {
+            level (2 2);
+        }
+        side1
+        {
+            level (1 1);
+        }
+        side2
+        {
+            level (1 1);
+        }
+        wall2
+        {
+            level (2 2);
+        }
+    }
+
+    // Resolve sharp angles
+    resolveFeatureAngle 15;
+
+    // Region-wise refinement
+    // ~~~~~~~~~~~~~~~~~~~~~~
+    refinementRegions
+    {
+        // Example: Uncomment and set the mode and levels for region refinement
+        // refinementBox
+        // {
+        //     mode inside;
+        //     levels ((1E15 4));
+        // }
+    }
+
+    // Mesh selection
+    locationInMesh (0.01 0.01 0.41);
+    allowFreeStandingZoneFaces false;
+}
+
+// Settings for the snapping.
+snapControls
+{
+    nSmoothPatch 3;
+    tolerance 1.5; // Adjust as needed
+    nSolveIter 30; // Increase iterations
+    nRelaxIter 5;  // Increase relaxation iterations
+
+    // Feature snapping
+    nFeatureSnapIter 10;
+    implicitFeatureSnap true;
+    explicitFeatureSnap false;
+    multiRegionFeatureSnap false;
+}
+
+// Settings for the layer addition. Commented out as addLayers is set to false.
+addLayersControls
+{
+    relativeSizes true;
+
+    layers
+    {
+        "wall"
+        {
+            nSurfaceLayers 3;
+        }
+
+        "wall"
+        {
+            nSurfaceLayers 3;
+        }
+
+        "weirCross.*"
+        {
+            nSurfaceLayers 1;
+        }
+    }
+
+    expansionRatio 1.2;
+    finalLayerThickness 0.3;
+    minThickness 0.1;
+    nGrow 0;
+    featureAngle 60;
+    slipFeatureAngle 30;
+    nRelaxIter 5;
+    nSmoothSurfaceNormals 1;
+    nSmoothNormals 3;
+    nSmoothThickness 10;
+    maxFaceThicknessRatio 0.5;
+    maxThicknessToMedialRatio 0.3;
+    minMedialAxisAngle 90;
+    nBufferCellsNoExtrude 0;
+    nLayerIter 50;
+}
+
+// Generic mesh quality settings. At any undoable phase these determine
+// where to undo.
+meshQualityControls
+{
+    #include "meshQualityDict"
+
+    // Advanced
+    nSmoothScale 4;
+    errorReduction 0.75;
+
+    // Additional quality checks
+    maxNonOrtho 65;
+    maxBoundarySkewness 20;
+    maxInternalSkewness 4;
+    maxConcave 80;
+}
+
+// Advanced
+writeFlags
+(
+    scalarLevels
+    layerSets
+    layerFields     // write volScalarField for layer coverage
+);
+
+mergeTolerance 1e-6;
+
+// ************************************************************************* //
+

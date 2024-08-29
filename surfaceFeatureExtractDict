@@ -1,0 +1,95 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.2                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      surfaceFeatureExtractDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+slope.stl
+{
+    // How to obtain raw features
+    extractionMethod    extractFromSurface;
+
+    extractFromSurfaceCoeffs
+    {
+        // Write options
+        writeObj        yes;
+
+        //- Extract from .eMesh or feature-edge mesh
+        useNonManifoldEdges      no;
+        useBoundaryEdges         yes;
+
+        //- Angle above which an edge is considered a feature
+        includedAngle               150;
+    }
+
+    subsetFeatures
+    {
+        // What subset to use (from the previous selection)
+        nonManifoldEdges yes;
+        boundaryEdges    yes;
+        openEdges        no;
+        featureAngle     no;
+        angle            150;
+    }
+
+    // Surface extraction
+    writeFeatures    yes;
+    writeCellFeatureEdgeMaps no;
+
+    // Write features as an .obj file (for use in snappyHexMeshDict)
+    writeObj yes;
+
+    // Number of un-used edges to allow
+    nUnusedEdgesAllowed 10;
+}
+
+rock.stl
+{
+    // How to obtain raw features
+    extractionMethod    extractFromSurface;
+
+    extractFromSurfaceCoeffs
+    {
+        // Write options
+        writeObj        yes;
+
+        //- Extract from .eMesh or feature-edge mesh
+        useNonManifoldEdges      no;
+        useBoundaryEdges         yes;
+
+        //- Angle above which an edge is considered a feature
+        includedAngle               150;
+    }
+
+    subsetFeatures
+    {
+        // What subset to use (from the previous selection)
+        nonManifoldEdges yes;
+        boundaryEdges    yes;
+        openEdges        no;
+        featureAngle     no;
+        angle            150;
+    }
+
+    // Surface extraction
+    writeFeatures    yes;
+    writeCellFeatureEdgeMaps no;
+
+    // Write features as an .obj file (for use in snappyHexMeshDict)
+    writeObj yes;
+
+    // Number of un-used edges to allow
+    nUnusedEdgesAllowed 10;
+}
+
+// ************************************************************************* //
